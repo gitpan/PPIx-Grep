@@ -37,9 +37,11 @@ my $builder = $class->new(
     build_requires  => {
     },
     requires        => {
-        'version'   => 0,
-        'Readonly'  => 0,
-        'PPI'       => 1.201,
+        'version'       => 0,
+        'Readonly'      => 1.03,
+        'PPI'           => 1.201,
+        'PPIx::XPath'   => 1,
+        'App::Ack'      => 1.68,
     },
     recommends      => {
     },

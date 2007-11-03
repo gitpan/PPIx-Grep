@@ -5,7 +5,7 @@ use 5.008001;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('v0.0.1');
+use version; our $VERSION = qv('v0.0.2');
 
 use Exporter qw< import >;
 
@@ -69,7 +69,7 @@ PPIx::Grep - Search L<PPI> documents (not Perl code).
 
 =head1 VERSION
 
-This document describes PPIx::Grep version 0.0.1.
+This document describes PPIx::Grep version 0.0.2.
 
 
 =head1 SYNOPSIS
