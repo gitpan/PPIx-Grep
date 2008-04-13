@@ -1,4 +1,6 @@
 use 5.008001;
+use utf8;
+
 use strict;
 use warnings;
 
@@ -7,7 +9,7 @@ use English qw< −no_match_vars >;
 use Module::Build;
 
 
-my $class = Module::Build->subclass( code => <<'SUBCLASS' );
+my $class = Module::Build->subclass( code => <<'END_SUBCLASS' );
 
     sub ACTION_authortest {
         my $self = shift;
@@ -17,6 +19,8 @@ my $class = Module::Build->subclass( code => <<'SUBCLASS' );
         $self->depends_on('distmeta');
         $self->recursive_test_files(1);
         $self->depends_on('test');
+
+        return;
     } # end ACTION_authortest()
 
     sub ACTION_distdir {
@@ -24,10 +28,10 @@ my $class = Module::Build->subclass( code => <<'SUBCLASS' );
 
         $self->depends_on('authortest');
 
-        $self->SUPER::ACTION_distdir;
+        return $self->SUPER::ACTION_distdir;
     } # end ACTION_distdir
 
-SUBCLASS
+END_SUBCLASS
 
 my $builder = $class->new(
     module_name     => 'PPIx::Grep',
@@ -35,17 +39,32 @@ my $builder = $class->new(
     dist_author     => 'Elliot Shank <perl@galumph.com>',
     dynamic_config  => 0,
     build_requires  => {
+        'Test::Deep'    => 0.099,
+        'Test::More'    => 0.72,
     },
     requires        => {
-        'version'       => 0,
-        'Readonly'      => 1.03,
-        'PPI'           => 1.201,
-        'PPIx::XPath'   => 1,
-        'App::Ack'      => 1.68,
+        'Carp'              => 0,
+        'English'           => 0,
+        'Exporter'          => 0,
+        'Getopt::Long'      => 2.37,
+        'List::MoreUtils'   => 0,
+        'PPI'               => 1.201,
+        'PPIx::Shorthand'   => 1,
+        'Readonly'          => 1.03,
+        'String::Format'    => 1.14,
+        'strict'            => 0,
+        'utf8'              => 0,
+        'version'           => 0.74,
+        'warnings'          => 0,
     },
     recommends      => {
     },
-    script_files       => [ glob('bin/*') ],
+    meta_merge      => {
+        configure_requires  => {
+            'Module::Build' => 0.2808,
+        },
+    },
+    script_files       => [ glob('examples/*') ],
     create_packlist    => 1,
     sign               => 0,
     add_to_cleanup     => [

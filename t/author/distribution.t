@@ -1,9 +1,15 @@
 #!/usr/bin/env perl
 
-# Taken from http://www.chrisdolan.net/talk/index.php/2005/11/14/private-regression-tests/.
+# Taken from
+# http://www.chrisdolan.net/talk/index.php/2005/11/14/private-regression-tests/.
 
-use warnings;
+use 5.008001;
+use utf8;
+
 use strict;
+use warnings;
+
+use version; our $VERSION = qv('v0.0.3');
 
 # No POD coverage due to complaints about builtins when using Fatal.
 use Test::Distribution ( distversion => 1, not => 'podcover' );

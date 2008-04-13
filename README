@@ -1,4 +1,4 @@
-PPIx::Grep version 0.0.1.
+PPIx::Grep version 0.0.3.
 
 Search PPI documents (not Perl code).
 
@@ -33,7 +33,7 @@ a bug in those tools and not in this distribution.
 
 COPYRIGHT AND LICENCE
 
-Copyright ©2006-2007, Elliot Shank <perl@galumph.com>. All rights reserved.
+Copyright ©2007-2008, Elliot Shank <perl@galumph.com>. All rights reserved.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.

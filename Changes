@@ -1,5 +1,18 @@
 Revision history for PPIx::Grep.
 
+0.0.3  2008-04-12
+    Allow specification of the output format via the --format option.
+
+    Now uses PPIx::Shorthand for looking up PPI::Element classes,
+    making usage a lot nicer.  You can now just say "include" instead
+    of "Statement::Include".
+
+    Also, the first argument is now a comma-delimited list of
+    classes, not merely a single class.
+
+    Allow requiring PPI::Elements' contents to match as regex via
+    the --match option.
+
 0.0.2  2007-11-02
     Get more specific about Readonly version requirement.
 

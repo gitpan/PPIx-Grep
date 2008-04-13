@@ -2,17 +2,17 @@
 
 use 5.008001;
 use utf8;
-
 use strict;
 use warnings;
 
 use version; our $VERSION = qv('v0.0.3');
 
-use Test::More;
-use Test::Pod::Coverage;
+use Test::Perl::Critic (
+    -severity => 1,
+    -profile => 't/author/perlcriticrc-code'
+);
 
-# The also_private usage is required due to using the Fatal module.
-all_pod_coverage_ok( { also_private => [ qw{ close read write } ] } );
+all_critic_ok( qw< lib bin > );
 
 # setup vim: set filetype=perl tabstop=4 softtabstop=4 expandtab :
 # setup vim: set shiftwidth=4 shiftround textwidth=78 nowrap autoindent :
