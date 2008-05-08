@@ -3,6 +3,7 @@ Changes
 examples/ppigrep
 lib/PPIx/Grep.pm
 MANIFEST			This list of files
+META.yml
 README
 t/a_use_ok.t
 t/author/consistent_version_numbers.t
@@ -20,4 +21,3 @@ t/author/README
 t/b__format_element.t
 t/b__initialize_from_command_line.t
 TODO
-META.yml

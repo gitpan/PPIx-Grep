@@ -6,7 +6,7 @@ use utf8;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('v0.0.3');
+use version; our $VERSION = qv('v0.0.4');
 
 use English qw<-no_match_vars>;
 use Carp qw< confess >;
@@ -142,6 +142,16 @@ sub _emit_usage_message {
 ppigrep [--match regex] [--format format] PPI-class file [...]
 
 ppigrep { -h | --help | -V | --version }
+
+--format escapes:
+    %f – The name of the file.
+    %l – The starting line number of the element.
+    %c – The starting character within the first line of the element.
+    %C – The starting column within the first line of the element.
+    %L – The class of the element, with the 'PPI::' prefix removed.
+    %s – The source-code/content for the element.
+    %S – The source-code/content for the element, C<chomp>ed.
+    %W – The source-code/content for the element, whitespace shrunk.
 
 (Note: file argument is required-- STDIN is not yet handled.)
 END_USAGE
@@ -368,6 +378,7 @@ sub set_print_format {
     return;
 } # end set_print_format()
 
+Readonly my $PPI_PREFIX_LENGTH => length 'PPI::';
 
 sub _format_element {
     my ($element, $filename, $location_components) = @_;
@@ -377,12 +388,25 @@ sub _format_element {
         l => $location_components->[$PPI_LINE_NUMBER],
         c => $location_components->[$PPI_CHARACTER_NUMBER],
         C => $location_components->[$PPI_COLUMN_NUMBER],
-        s => $element,
-        S => sub { my $source = $element; chomp $source; $source },
+        L => sub { substr $element->class(), $PPI_COLUMN_NUMBER },
+        s => sub { $element->content() },
+        S => sub { my $source = $element->content(); chomp $source; $source },
+        W => sub { _strip_element( $element ) },
     );
 
     return stringf(_get_print_format(), %format_specification);
 } # end _format_element()
+
+sub _strip_element {
+    my ($element) = @_;
+
+    my $source = $element->content();
+    $source =~ s< \A \s+ ><>xms;
+    $source =~ s< \s+ \z ><>xms;
+    $source =~ s< \s+ >< >xmsg;
+
+    return $source;
+} # end _strip_element()
 
 
 1; # Magic true value required at end of module.
@@ -400,7 +424,7 @@ PPIx::Grep - Search L<PPI> documents (not Perl code).
 
 =head1 VERSION
 
-This document describes PPIx::Grep version 0.0.3.
+This document describes PPIx::Grep version 0.0.4.
 
 
 =head1 SYNOPSIS

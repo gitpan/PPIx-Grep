@@ -39,7 +39,7 @@ my $builder = $class->new(
     dist_author     => 'Elliot Shank <perl@galumph.com>',
     dynamic_config  => 0,
     build_requires  => {
-        'Test::Deep'    => 0.099,
+        'Test::Deep'    => 0.098,
         'Test::More'    => 0.72,
     },
     requires        => {

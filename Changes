@@ -1,5 +1,11 @@
 Revision history for PPIx::Grep.
 
+0.0.4  2008-05-08
+    Added %W format escape.
+
+    Reduce build dependency upon Test::Deep to 0.098 due to problems
+    with 0.099 and 0.100 at work.
+
 0.0.3  2008-04-12
     Allow specification of the output format via the --format option.
 

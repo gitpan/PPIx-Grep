@@ -7,18 +7,22 @@ use warnings;
 
 use version; our $VERSION = qv('v0.0.3');
 
-
 use PPI::Token::Word;
 use PPIx::Grep;
 use Readonly;
 
 
-use Test::More tests => 7;
+use Test::More tests => 9;
 
 
-Readonly my $CHOMPED_WORD_CONTENT   => 'test_word';
-Readonly my $WORD_CONTENT           => "$CHOMPED_WORD_CONTENT\n";
-Readonly my $WORD                   => PPI::Token::Word->new($WORD_CONTENT);
+Readonly my $CHOMPED_WORD_CONTENT       => 'test_word';
+Readonly my $WORD_CONTENT_TO_BE_CHOMPED => "$CHOMPED_WORD_CONTENT\n";
+Readonly my $WORD                       => PPI::Token::Word->new($WORD_CONTENT_TO_BE_CHOMPED);
+
+Readonly my $STRIPPED_WORD_CONTENT       => 'test word';
+Readonly my $WORD_CONTENT_TO_BE_STRIPPED => " \ttest  \nword\n   ";
+Readonly my $STRIPPED_WORD               => PPI::Token::Word->new($WORD_CONTENT_TO_BE_STRIPPED);
+
 Readonly my $FILENAME               => 'an example file name';
 Readonly my $TEST_LINE_NUMBER       => 53;
 Readonly my $TEST_CHARACTER_NUMBER  => 194;
@@ -70,7 +74,7 @@ is(
 PPIx::Grep::set_print_format('%s');
 is(
     PPIx::Grep::_format_element($WORD, $FILENAME, $LOCATION),
-    $WORD_CONTENT,
+    $WORD_CONTENT_TO_BE_CHOMPED,
     q<"%s" returns the element content.>,
 );
 
@@ -79,6 +83,37 @@ is(
     PPIx::Grep::_format_element($WORD, $FILENAME, $LOCATION),
     $CHOMPED_WORD_CONTENT,
     q<"%S" returns the chomped element content.>,
+);
+
+PPIx::Grep::set_print_format('%W');
+is(
+    PPIx::Grep::_format_element($STRIPPED_WORD, $FILENAME, $LOCATION),
+    $STRIPPED_WORD_CONTENT,
+    q<"%W" returns the stripped element content for a simple Word.>,
+);
+
+Readonly my $EXCEPTION_CLASS => <<'END_EXCEPTION_CLASS';
+    use Exception::Class (
+    'Perl::Critic::Exception' => {
+        isa         => 'Exception::Class::Base',
+        description => 'A problem discovered by Perl::Critic.',
+    },
+);
+END_EXCEPTION_CLASS
+
+## no critic (RestrictLongStrings)
+Readonly my $STRIPPED_EXCEPTION_CLASS =>
+    q[use Exception::Class ( 'Perl::Critic::Exception' => { isa => 'Exception::Class::Base', description => 'A problem discovered by Perl::Critic.', }, );];
+## use critic
+## no critic (Subroutines::ProtectPrivateSubs)
+is(
+    PPIx::Grep::_format_element(
+        PPI::Token::Word->new($EXCEPTION_CLASS),
+        $FILENAME,
+        $LOCATION,
+    ),
+    $STRIPPED_EXCEPTION_CLASS,
+    q<"%W" returns the stripped element content for "use Exception::Class".>,
 );
 
 # setup vim: set filetype=perl tabstop=4 softtabstop=4 expandtab :

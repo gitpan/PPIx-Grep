@@ -6,7 +6,7 @@ use 5.008001;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('v0.0.3');
+use version; our $VERSION = qv('v0.0.4');
 
 use PPIx::Grep qw< run >;
 
@@ -25,7 +25,7 @@ ppigrep - Search L<PPI> documents (not Perl code).
 
 =head1 VERSION
 
-This document describes ppigrep version 0.0.3.
+This document describes ppigrep version 0.0.4.
 
 
 =head1 USAGE
@@ -108,12 +108,21 @@ element.
 =item C<%C> – The starting column within the first line of the
 element.  This will differ from C<%c> when there are tab characters.
 
+=item C<%L> – The class of the element, with the 'PPI::' prefix
+removed (you can always get that back by prefixing this field with the
+5 characters).
+
 =item C<%s> – The source-code/content for the element.
 
 =item C<%S> – The source-code/content for the element, C<chomp>ed.
 
+=item C<%W> – The source-code/content for the element, leading and trailing
+whitespace removed and all other whitespace converted to a single space
+character.
+
 =back
 
+Z<>
 
 =item · C<--help> or C<-h>
 
@@ -123,6 +132,18 @@ Emit a short description of this command and its options and quit.
 =item · C<--version> or C<-V>
 
 Emit the version of this command and quit.
+
+
+=back
+
+
+=head1 EXAMPLES
+
+=over
+
+=item Show all C<eval> statements.
+
+    ppigrep --format '%s' --match '^\s*eval' statement Some/Module.pm
 
 
 =back
