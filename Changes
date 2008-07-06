@@ -1,5 +1,9 @@
 Revision history for PPIx::Grep.
 
+0.0.6  2008-07-06
+
+    Brown paper bag release.  No further comment.  :/
+
 0.0.5  2008-07-06
 
     Make use of File::Next.

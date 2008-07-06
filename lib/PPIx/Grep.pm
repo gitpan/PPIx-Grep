@@ -6,7 +6,7 @@ use utf8;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('v0.0.5');
+use version; our $VERSION = qv('v0.0.6');
 
 use English qw<-no_match_vars>;
 use Carp qw< confess >;
@@ -23,6 +23,7 @@ our %EXPORT_TAGS    = (
     all => [@EXPORT_OK],
 );
 
+use File::Next ();
 use Getopt::Long ();
 use List::MoreUtils qw< any none >;
 use PPI::Document ();
@@ -532,7 +533,7 @@ PPIx::Grep - Search L<PPI> documents (not Perl code).
 
 =head1 VERSION
 
-This document describes PPIx::Grep version 0.0.5.
+This document describes PPIx::Grep version 0.0.6.
 
 
 =head1 SYNOPSIS

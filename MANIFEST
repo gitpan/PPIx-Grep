@@ -3,7 +3,6 @@ Build.PL
 Changes
 lib/PPIx/Grep.pm
 MANIFEST			This list of files
-META.yml
 README
 t/a_use_ok.t
 t/b__format_element.t
@@ -21,3 +20,4 @@ xt/author/pod_coverage.t
 xt/author/pod_spelling.t
 xt/author/pod_syntax.t
 xt/author/README
+META.yml

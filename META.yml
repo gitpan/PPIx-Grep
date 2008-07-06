@@ -1,6 +1,6 @@
 ---
 name: PPIx-Grep
-version: v0.0.5
+version: v0.0.6
 author:
   - 'Elliot Shank <perl@galumph.com>'
 abstract: Search L<PPI> documents (not Perl code).
@@ -29,7 +29,7 @@ dynamic_config: 0
 provides:
   PPIx::Grep:
     file: lib/PPIx/Grep.pm
-    version: v0.0.5
+    version: v0.0.6
 generated_by: Module::Build version 0.280801
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
