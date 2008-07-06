@@ -1,5 +1,9 @@
 Revision history for PPIx::Grep.
 
+0.0.5  2008-07-06
+
+    Make use of File::Next.
+
 0.0.4  2008-05-08
     Added %W format escape.
 

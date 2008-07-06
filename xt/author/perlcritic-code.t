@@ -7,10 +7,7 @@ use warnings;
 
 use version; our $VERSION = qv('v0.0.3');
 
-use Test::Perl::Critic (
-    -severity => 1,
-    -profile => 't/author/perlcriticrc-code'
-);
+use Test::Perl::Critic ( -profile => 'xt/author/perlcriticrc-code' );
 
 all_critic_ok( qw< lib bin > );
 

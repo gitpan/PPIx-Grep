@@ -26,7 +26,7 @@ my $this_year =
     (localtime)[$LOCALTIME_YEAR_FIELD_NUMBER] + $LOCALTIME_YEAR_OFFSET;
 my $copyrights_found = 0;
 find({wanted => \&check_file, no_chdir => 1}, 'blib');
-foreach ( grep { m/^readme/ixms } read_dir(q<.>) ) {
+foreach ( grep { m/^readme/xmsi } read_dir(q<.>) ) {
     check_file();
 } # end foreach
 

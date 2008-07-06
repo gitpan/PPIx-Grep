@@ -43,12 +43,14 @@ is(
     'format with no substitutable value returns the format.',
 );
 
+
 PPIx::Grep::set_print_format('%f');
 is(
     PPIx::Grep::_format_element($WORD, $FILENAME, $LOCATION),
     $FILENAME,
     q<"%f" returns the filename.>,
 );
+
 
 PPIx::Grep::set_print_format('%l');
 is(
@@ -57,12 +59,14 @@ is(
     q<"%l" returns the line number.>,
 );
 
+
 PPIx::Grep::set_print_format('%c');
 is(
     PPIx::Grep::_format_element($WORD, $FILENAME, $LOCATION),
     $TEST_CHARACTER_NUMBER,
     q<"%c" returns the character number.>,
 );
+
 
 PPIx::Grep::set_print_format('%C');
 is(
@@ -71,6 +75,7 @@ is(
     q<"%C" returns the column number.>,
 );
 
+
 PPIx::Grep::set_print_format('%s');
 is(
     PPIx::Grep::_format_element($WORD, $FILENAME, $LOCATION),
@@ -78,18 +83,20 @@ is(
     q<"%s" returns the element content.>,
 );
 
-PPIx::Grep::set_print_format('%S');
+
+PPIx::Grep::set_print_format('%t');
 is(
     PPIx::Grep::_format_element($WORD, $FILENAME, $LOCATION),
     $CHOMPED_WORD_CONTENT,
-    q<"%S" returns the chomped element content.>,
+    q<"%t" returns the chomped element content.>,
 );
 
-PPIx::Grep::set_print_format('%W');
+
+PPIx::Grep::set_print_format('%w');
 is(
     PPIx::Grep::_format_element($STRIPPED_WORD, $FILENAME, $LOCATION),
     $STRIPPED_WORD_CONTENT,
-    q<"%W" returns the stripped element content for a simple Word.>,
+    q<"%w" returns the stripped element content for a simple Word.>,
 );
 
 Readonly my $EXCEPTION_CLASS => <<'END_EXCEPTION_CLASS';
@@ -113,7 +120,7 @@ is(
         $LOCATION,
     ),
     $STRIPPED_EXCEPTION_CLASS,
-    q<"%W" returns the stripped element content for "use Exception::Class".>,
+    q<"%w" returns the stripped element content for "use Exception::Class".>,
 );
 
 # setup vim: set filetype=perl tabstop=4 softtabstop=4 expandtab :

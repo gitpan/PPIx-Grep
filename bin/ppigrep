@@ -6,7 +6,7 @@ use 5.008001;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('v0.0.4');
+use version; our $VERSION = qv('v0.0.5');
 
 use PPIx::Grep qw< run >;
 
@@ -16,7 +16,7 @@ __END__
 
 =encoding utf8
 
-=for stopwords ppigrep TODO
+=for stopwords ppigrep whitespace
 
 =head1 NAME
 
@@ -25,7 +25,7 @@ ppigrep - Search L<PPI> documents (not Perl code).
 
 =head1 VERSION
 
-This document describes ppigrep version 0.0.4.
+This document describes ppigrep version 0.0.5.
 
 
 =head1 USAGE
@@ -50,7 +50,7 @@ contains
 
     $x = 'a' . 'b';
 
-C<ppigrep Token::Quote foo.pl> will emit
+C<ppigrep quote foo.pl> will emit
 
     foo.pl:1:6:'a'
     foo.pl:1:12:'b'
@@ -144,6 +144,11 @@ Emit the version of this command and quit.
 =item Show all C<eval> statements.
 
     ppigrep --format '%s' --match '^\s*eval' statement Some/Module.pm
+
+
+=item Find all calls to the date program via back-ticks, e.g. C<`date`>.
+
+    ppigrep --match '\bdate\b' backtick Some/Module.pm
 
 
 =back

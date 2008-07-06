@@ -9,7 +9,7 @@ use utf8;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('v0.0.3');
+use version; our $VERSION = qv('v0.0.5');
 
 use File::Find;
 use File::Slurp;
@@ -18,7 +18,7 @@ use Test::More qw(no_plan); ## no critic (Bangs::ProhibitNoPlan)
 
 
 my $last_version = undef;
-find({wanted => \&check_version, no_chdir => 1}, 'blib');
+find( {wanted => \&check_version, no_chdir => 1}, 'blib' );
 if (! defined $last_version) {
     ## no critic (RequireInterpolationOfMetachars)
     fail('Failed to find any files with $VERSION');
@@ -28,14 +28,14 @@ if (! defined $last_version) {
 
 sub check_version {
     # $_ is the full path to the file
-    return if ! m{blib/script/}xms && ! m{ [.] pm \z}xms;
+    return if not m<blib/script/>xms and not m< [.] pm \z >xms;
 
     my $content = read_file($_);
 
     # only look at perl scripts, not sh scripts
-    return if m{blib/script/}xms && $content !~ m/\A \#![^\r\n]+?perl/xms;
+    return if m<blib/script/>xms and $content !~ m< \A \#![^\r\n]+?perl >xms;
 
-    my @version_lines = $content =~ m/ ( [^\n]* \$VERSION [^\n]* ) /gxms;
+    my @version_lines = $content =~ m< ( [^\n]* \$VERSION [^\n]* ) >xmsg;
     if (@version_lines == 0) {
        fail($_);
     } # end if

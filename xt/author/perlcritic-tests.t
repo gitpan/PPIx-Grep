@@ -7,12 +7,9 @@ use warnings;
 
 use version; our $VERSION = qv('v0.0.3');
 
-use Test::Perl::Critic (
-    -severity => 1,
-    -profile => 't/author/perlcriticrc-tests'
-);
+use Test::Perl::Critic ( -profile => 'xt/author/perlcriticrc-tests' );
 
-all_critic_ok( qw< t > );
+all_critic_ok( qw< t xt > );
 
 # setup vim: set filetype=perl tabstop=4 softtabstop=4 expandtab :
 # setup vim: set shiftwidth=4 shiftround textwidth=78 nowrap autoindent :

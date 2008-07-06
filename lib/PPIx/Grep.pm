@@ -6,7 +6,7 @@ use utf8;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('v0.0.4');
+use version; our $VERSION = qv('v0.0.5');
 
 use English qw<-no_match_vars>;
 use Carp qw< confess >;
@@ -55,6 +55,30 @@ Readonly my $EXIT_CODE_FOUND      => 0;
 Readonly my $EXIT_CODE_NOT_FOUND  => 1;
 Readonly my $EXIT_CODE_ERROR      => 2;
 
+Readonly my %ignored_directories =>
+    map { $_ => 1 }
+    qw<
+        .bzr
+        .cdv
+        ~.dep
+        ~.dot
+        ~.nib
+        ~.plst
+        .git
+        .hg
+        .pc
+        .svn
+        blib
+        CVS
+        RCS
+        SCCS
+        _darcs
+        _sgbak
+        autom4te.cache
+        cover_db
+        _build
+    >;
+
 
 my $stdout       = *STDOUT;
 my $stderr       = *STDERR;
@@ -78,12 +102,24 @@ sub run {
         return $EXIT_CODE_ERROR;
     } # end if
 
-    my ($pattern, @files) = @argv;
+    my ($pattern, @paths) = @argv;
     my @ppi_classes = _derive_ppi_classes($pattern)
         or return $EXIT_CODE_ERROR;
 
+    my $file_error = 0;
+    my $iterator = File::Next::files(
+        {
+            file_filter => sub {
+                    not _is_ignored_file($_)
+                and _is_perl_file($File::Next::name, $file_error)
+            },
+            descend_filter => sub { not _is_ignored_directory($_) },
+        },
+        @paths,
+    );
+
     my $return_code = $EXIT_CODE_NOT_FOUND;
-    foreach my $file (@files) {
+    while ( defined ( my $file = $iterator->() ) ) {
         my $found_something =
             _search_and_emit(
                 $file,
@@ -98,6 +134,10 @@ sub run {
             $return_code = $EXIT_CODE_FOUND;
         } # end if
     } # end foreach
+
+    if ($file_error) {
+        $return_code = $EXIT_CODE_ERROR;
+    }
 
     return $return_code;
 } # end run()
@@ -304,16 +344,21 @@ sub _set_options {
     if ($match) {
         my $compiled_match;
 
-        eval { $compiled_match = qr/$match/; }; ## no critic (RegularExpressions)
-        if ($EVAL_ERROR) {
-            (my $error = $EVAL_ERROR) =~
-                s< \s+ at \s+ \S+ \s+ line \s+ \d+ .* ><>xms;
-            chomp $error;
+        eval { $compiled_match = qr/$match/; 1; } ## no critic (RegularExpressions)
+            or do {
+                if ($EVAL_ERROR) {
+                    (my $error = $EVAL_ERROR) =~
+                        s< \s+ at \s+ \S+ \s+ line \s+ \d+ .* ><>xms;
+                    chomp $error;
 
-            print {_get_stderr()} qq<Invalid regex "$match": $error.>;
+                    print {_get_stderr()} qq<Invalid regex "$match": $error.>;
 
-            return;
-        }
+                    return;
+                }
+
+                print {_get_stderr()} qq<Invalid regex "$match".>;
+                return;
+            };
 
         set_match( $compiled_match );
     } # end if
@@ -390,23 +435,86 @@ sub _format_element {
         C => $location_components->[$PPI_COLUMN_NUMBER],
         L => sub { substr $element->class(), $PPI_COLUMN_NUMBER },
         s => sub { $element->content() },
-        S => sub { my $source = $element->content(); chomp $source; $source },
-        W => sub { _strip_element( $element ) },
+        S => sub { _invoke_method($element, $_[0]) },
+        t => sub { my $source = $element->content(); chomp $source; $source },
+        T => sub { my $source = _invoke_method($element, $_[0]); chomp $source; $source },
+        w => sub { _strip( $element ) },
+        W => sub { _strip( _invoke_method($element, $_[0]) ) },
     );
 
     return stringf(_get_print_format(), %format_specification);
 } # end _format_element()
 
-sub _strip_element {
+# Invoke an arbitrary method safely on an element.
+sub _invoke_method {
+    my ($element, $method_name) = @_;
+
+    my $value;
+    local $EVAL_ERROR = undef;
+    eval { $value = $element->$method_name(); 1; } or return '<error>';
+
+    if (not defined $value) {
+        return '<undef>';
+    } # end if
+
+    return $value;
+} # end _invoke_method()
+
+sub _strip {
     my ($element) = @_;
 
-    my $source = $element->content();
+    my $source = "$element"; # no content(): may be a plain string.
     $source =~ s< \A \s+ ><>xms;
     $source =~ s< \s+ \z ><>xms;
     $source =~ s< \s+ >< >xmsg;
 
     return $source;
-} # end _strip_element()
+} # end _strip()
+
+
+sub _is_ignored_directory {
+    my ($directory) = @_;
+
+    return 1 if $ignored_directories{$directory};
+    return 0;
+}
+
+sub _is_ignored_file {
+    my ($file) = @_;
+
+    return 1 if $file =~ qr< (?: [.] bak | ~ ) \z >xms;
+    return 1 if $file =~ qr< [#] .+ [#] \z       >xms;
+    return 1 if $file =~ qr< [._] .* \.swp \z    >xms;
+    return $file =~ qr< core [.] \d+ \z      >xms;
+}
+
+sub _is_perl_file {
+    my ($file, $error) = @_;
+
+    return 1 if $file =~ m/ [.] (?: p (?: l x? | m ) | t | PL ) \z /xms; ## no critic (ProhibitSingleCharAlternation)
+    return 0 if index($file, q<.>) >= 0;
+    return _is_perl_program($file, $error);
+}
+
+sub _is_perl_program {
+    my ($file, $error) = @_;
+
+    if (open my $handle, '<', $file) {
+        my $first_line = <$handle>;
+
+        if (not close $handle) {
+            print {*STDERR} qq<Could not close "$file": $OS_ERROR\n>;
+            ${$error} = 1;
+            return 0;
+        }
+
+        return $first_line =~ m< \A [#]! .* \bperl >xms;
+    }
+
+    print {*STDERR} qq<Could not open "$file": $OS_ERROR\n>;
+    ${$error} = 1;
+    return 0;
+}
 
 
 1; # Magic true value required at end of module.
@@ -424,7 +532,7 @@ PPIx::Grep - Search L<PPI> documents (not Perl code).
 
 =head1 VERSION
 
-This document describes PPIx::Grep version 0.0.4.
+This document describes PPIx::Grep version 0.0.5.
 
 
 =head1 SYNOPSIS

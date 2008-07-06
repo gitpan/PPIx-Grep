@@ -1,12 +1,7 @@
 # Make things as strict as possible.
+profile-strictness = quiet
 severity = 1
 verbose = %f: %m at line %l, column %c.  %e.  (Severity: %s, %p)\n
-
-# Tags are good enough for me.
-[-Miscellanea::RequireRcsKeywords]
-
-# No Emacs around here.
-[-Editor::RequireEmacsFileVariables]
 
 # Need to write CodeLayout::RequireUTF8
 [-CodeLayout::RequireASCII]
@@ -23,8 +18,20 @@ stop_words = PPI regex subclasses
 source   = module_starter_pbp_0_0_3
 language = en_US
 
+# No Emacs around here.
+[-Editor::RequireEmacsFileVariables]
+
+[-ErrorHandling::RequireUseOfExceptions]
+
 [InputOutput::RequireCheckedSyscalls]
 functions = open close
+
+# Tags are good enough for me.
+[-Miscellanea::RequireRcsKeywords]
+
+# For some reason, this chokes on v-strings within a version constructor
+# and I don't have time to chase this down.
+[-Modules::PerlMinimumVersion]
 
 [RegularExpressions::ProhibitUnusualDelimiters]
 allow_all_brackets = 1
@@ -32,16 +39,14 @@ allow_all_brackets = 1
 [RegularExpressions::RequireBracesForMultiline]
 allow_all_brackets = 1
 
+[-Tics::ProhibitLongLines]
+
 # Magic numbers BAD.  (It doesn't hurt that I wrote this policy.)
 [ValuesAndExpressions::ProhibitMagicNumbers]
 severity = 4
 
-# For some reason, this chokes on v-strings within a version constructor
-# and I don't have time to chase this down.
-[-Modules::PerlMinimumVersion]
-
-[-ErrorHandling::RequireUseOfExceptions]
-[-Tics::ProhibitLongLines]
+[Variables::ProhibitPackageVars]
+packages = File::Next
 
 # setup vim: set filetype=conf tabstop=4 softtabstop=4 expandtab :
 # setup vim: set shiftwidth=4 shiftround textwidth=78 nowrap autoindent :
